@@ -9,6 +9,7 @@ defmodule GameOfStones.Client do
       {player, stones} ->
         IO.puts(
           "Welcome to the game! It's player's #{player} turn. There are #{stones} in the pile."
+          |> Colors.green()
         )
     end
 
