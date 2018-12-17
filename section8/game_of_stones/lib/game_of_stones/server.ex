@@ -2,8 +2,11 @@ defmodule GameOfStones.Server do
   @moduledoc """
   Game server for the Game of Stones
   """
-  use GenServer, restart: :transient # if server is stoped normally, supervisor wont restart it
+  # if server is stoped normally, supervisor wont restart it
+  use GenServer, restart: :transient
   @server_name __MODULE__
+
+  alias GameOfStones.Storage
 
   # interface
 
@@ -30,19 +33,33 @@ defmodule GameOfStones.Server do
   # callbacks
 
   def init(:started) do
-    {:ok, {1, 0, :started}}
+    initial =
+      case Storage.fetch() do
+        nil -> {1, 0, :started}
+        saved -> saved
+      end
+
+    {:ok, initial}
   end
 
   def init(_) do
     {:stop, "Invalid initial number of stones"}
   end
 
-  def handle_call({ :set_stones, stones }, _, { player, _, :started }) do
-    {:reply, { player, stones }, { player, stones, :in_progress }}
+  def handle_call({:set_stones, _}, _, {player, stones, :in_progress} = current) do
+    {:reply, {player, stones, :continue}, current}
+  end
+
+  def handle_call({:set_stones, stones}, _, {player, _, :started}) do
+    new_state = {player, stones, :in_progress}
+    new_state |> Storage.store()
+    {:reply, new_state, new_state}
   end
 
   def handle_call({:take, amount}, _, {player, stones, :in_progress}) do
-    do_take({player, amount, stones})
+    reply = do_take({player, amount, stones})
+    elem(reply, 2) |> Storage.store()
+    reply
   end
 
   # privates

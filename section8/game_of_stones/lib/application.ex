@@ -4,9 +4,9 @@ defmodule GameOfStones.Application do
   def start(_type, _args) do
     # processes to supervise
     children = [
+      GameOfStones.Storage,
       GameOfStones.Server
     ]
-
     # suppervision strategies:
     # - one_for_one: restart failed process
     # - one_for_all: restart all the processes

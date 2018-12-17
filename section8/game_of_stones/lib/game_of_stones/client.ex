@@ -1,5 +1,4 @@
 defmodule GameOfStones.Client do
-
   @default_stones Application.get_env(:game_of_stones, :default_stones)
 
   def main(argv) do
@@ -7,17 +6,21 @@ defmodule GameOfStones.Client do
   end
 
   defp parse(argv) do
-    { opts, _, _ } = OptionParser.parse(argv, switches: [stones: :integer])
+    {opts, _, _} = OptionParser.parse(argv, switches: [stones: :integer])
     opts |> Keyword.get(:stones, @default_stones)
   end
 
   def play(stones \\ @default_stones) do
     case GameOfStones.Server.set_stones(stones) do
-      {player, stones} ->
-        IO.puts(
-          "Welcome to the game! It's player's #{player} turn. There are #{stones} in the pile."
-          |> Colors.green()
-        )
+      {player, stones, :in_progress} ->
+        "Welcome to the game! It's player's #{player} turn. There are #{stones} in the pile."
+        |> Colors.green()
+        |> IO.puts()
+
+      {player, stones, :continue} ->
+        "Continuing game! It's player #{player} turn. #{stones} stones in the pile."
+        |> Colors.blue()
+        |> IO.puts()
     end
 
     take()
