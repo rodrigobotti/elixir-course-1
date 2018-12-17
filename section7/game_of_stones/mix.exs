@@ -17,6 +17,7 @@ defmodule GameOfStones.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      # env: [key: value] instead of using the config
       extra_applications: [:logger]
     ]
   end

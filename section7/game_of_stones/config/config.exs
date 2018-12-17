@@ -10,7 +10,7 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :game_of_stones, key: :value
+config :game_of_stones, default_stones: 30
 #
 # and access this configuration in your application as:
 #
