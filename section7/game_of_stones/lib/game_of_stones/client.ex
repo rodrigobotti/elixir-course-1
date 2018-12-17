@@ -1,4 +1,14 @@
 defmodule GameOfStones.Client do
+
+  def main(argv) do
+    parse(argv) |> play
+  end
+
+  defp parse(argv) do
+    { opts, _, _ } = OptionParser.parse(argv, switches: [stones: :integer])
+    opts |> Keyword.get(:stones, 30)
+  end
+
   def play(stones \\ 30) do
     GameOfStones.Server.start(stones)
     start_game!()
